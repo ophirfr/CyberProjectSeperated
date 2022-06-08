@@ -1,0 +1,15 @@
+conda create --name py39_test python=3.9
+conda activate  py39_test
+
+
+------
+Install from dlib dir:
+pip install dlib-19.23.0-cp39-cp39-win_amd64.whl
+-----
+
+pip install -r requirement.txt
+
+
+
+check conneition berween conputer with ping
+ping 

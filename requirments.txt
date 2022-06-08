@@ -1,0 +1,12 @@
+flask
+flask_restful
+PyQt5
+requests
+opencv-python
+cmake
+jsonify
+make-response
+pyjwt
+pyopenssl
+face_recognition
+
