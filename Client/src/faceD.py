@@ -39,22 +39,23 @@ class faceDetect:
             # video
             ret, frame = cap.read()
 
-            frame1 = cv2.resize(frame, None, fx=0.7, fy=0.7, interpolation=cv2.INTER_AREA)
+            #frame1 = cv2.resize(frame, None, fx=0.7, fy=0.7, interpolation=cv2.INTER_AREA)
             # original_image = frame1
-            original_image = frame
-            grayscale_image = cv2.cvtColor(original_image, cv2.COLOR_BGR2GRAY)
-            # מספר הפרצופים שזיהה בפורמט של column, row, width, height לכל פרצוף
-            detected_faces = face_cascade.detectMultiScale(grayscale_image)
-            # עובר על המערך ,רץ כמספר הפרצופים השקיימים שזיהה
-            for (column, row, width, height) in detected_faces:
-                # BGR - blue green red
-                # Enlarge the detect boundaries to get the complete face.
-                # Check limits are within 640x480
-                r, h, c, w = self.CheckLimts(column, row, width, height)
-                cropImgae = self.cropPic(original_image, r, h, c, w)
-                #cv2.rectangle(original_image, (column, row), (column + width, row + height), (255, 0, 0), 3)
+            if ret :
+                original_image = frame
+                grayscale_image = cv2.cvtColor(original_image, cv2.COLOR_BGR2GRAY)
+                # מספר הפרצופים שזיהה בפורמט של column, row, width, height לכל פרצוף
+                detected_faces = face_cascade.detectMultiScale(grayscale_image)
+                # עובר על המערך ,רץ כמספר הפרצופים השקיימים שזיהה
+                for (column, row, width, height) in detected_faces:
+                    # BGR - blue green red
+                    # Enlarge the detect boundaries to get the complete face.
+                    # Check limits are within 640x480
+                    r, h, c, w = self.CheckLimts(column, row, width, height)
+                    cropImgae = self.cropPic(original_image, r, h, c, w)
+                    #cv2.rectangle(original_image, (column, row), (column + width, row + height), (255, 0, 0), 3)
 
-            cv2.imshow('Image', original_image)
+                cv2.imshow('Image', original_image)
             c = cv2.waitKey(1)
             if c != -1:
                 break

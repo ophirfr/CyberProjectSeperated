@@ -71,7 +71,7 @@ class ClientUi(QtWidgets.QMainWindow, LogInScreen.Ui_MainWindow):
                 self.MessegeBox("Cound not find ID in DB")
             else:
                 detectedFaces=faceD.startCapture()
-                if(detectedFaces!=0):
+                if(detectedFaces>0):
                     res,status = restAPI.CompareImages(SERVER_URL,int(id),r"..\pic_tmp_client\face.jpg")
                     if(status== 200):
                         self.MessegeBox("You are APPROVED")
