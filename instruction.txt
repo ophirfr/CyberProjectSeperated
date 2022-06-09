@@ -1,3 +1,11 @@
+
+Auto Starup
+-----------
+
+Create a shortcut pointing to run_client_ui.bat
+windows start -> run -> 'enter' -> shell:startup -> 'enter'
+drag the shortcut
+
 conda create --name py39_test python=3.9
 conda activate  py39_test
 

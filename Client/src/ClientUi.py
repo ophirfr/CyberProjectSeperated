@@ -7,10 +7,18 @@ from RestAPI import RestAPI
 from faceD import faceDetect
 import json
 import ctypes
+import threading
 
 restAPI= RestAPI()
 faceD= faceDetect()
 SERVER_URL =""
+
+
+def LogOff() :
+     dll = ctypes.WinDLL('user32.dll')
+     dll.LockWorkStation()
+  
+
 #log in screen
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -33,6 +41,18 @@ class ClientUi(QtWidgets.QMainWindow, LogInScreen.Ui_MainWindow):
     def __init__(self, parent=None):
         super(ClientUi, self).__init__(parent)
         self.initUI()
+        self.StartAutoLogOffTimer(30)
+        self.Verified = False
+
+# --------------------------------------------------  
+    def LogOffIfNotVerified(self) :
+        if self.Verified == False :
+            LogOff()     
+# --------------------------------------------------
+
+    def StartAutoLogOffTimer(self,sec) :
+        timer = threading.Timer(sec, self.LogOffIfNotVerified)
+        timer.start()  # after 60 seconds, 'callback' will be called
 
 # --------------------------------------------------
 
@@ -59,6 +79,7 @@ class ClientUi(QtWidgets.QMainWindow, LogInScreen.Ui_MainWindow):
 # --------------------------------------------------
 
     def button_clicked(self):
+        self.Verified = False
         id= self.lineEdit.text()
         if (id == "" or id.isdigit() == False):
             self.MessegeBox("Invalid ID.\nUse numbers only")
@@ -74,11 +95,11 @@ class ClientUi(QtWidgets.QMainWindow, LogInScreen.Ui_MainWindow):
                 if(detectedFaces>0):
                     res,status = restAPI.CompareImages(SERVER_URL,int(id),r"..\pic_tmp_client\face.jpg")
                     if(status== 200):
+                        self.Verified = True
                         self.MessegeBox("You are APPROVED")
                     else:
                         self.MessegeBox("You are DENIED!!!\nThe Computer will Lockdown !!!\n You will have to re-enter your User/Pass for Windows")
-                        dll = ctypes.WinDLL('user32.dll')
-                        dll.LockWorkStation()
+                        LogOff()
                         
                 else:
                     self.MessegeBox("can not detect faces, try again")
