@@ -11,6 +11,7 @@ class ServerSettings():
         self.AdminPass = ""
         self.SecretKey = "1100"
 
+# פותח קובץ קורא ממנו את הנתונים ומכניס למשתני המחלקה
     def ReadSetting(self):
         # Opening JSON file
         try:

@@ -23,7 +23,7 @@ SERVER_URL =""
 
 
 
-
+# פותח את קובץ ההגדרות וקורא את הפורט וה ip ומאחד אותם לURL
 def IpConfig():
     # Opening JSON file
     try:
@@ -36,16 +36,12 @@ def IpConfig():
     SERVER_URL='https://'+json_object["ip"]+':'+json_object["port"]
     print(SERVER_URL)
 
+# Opens a MessageBox with the message it got
 def MessageBox( message):
     msgBox = QMessageBox()
     msgBox.setWindowTitle("msg")
     msgBox.setText(message)
     x = msgBox.exec_()
-
-    # --------------------------------------------------
-
-
-
 
 
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -114,6 +110,10 @@ class LoginScreen(QtWidgets.QMainWindow, AdminLogin.Ui_AdminLogin):
         self.pushButton.clicked.connect(self.button_clicked_sumbit)
         self.pushButton_2.clicked.connect(self.button_clicked_cancel)
 
+#כאשר המנהל לוחץ על כפתור ההרשמה נשלחת פקודת Rest שבודקת האם הפרטים נכונים
+#  VALID_TOKENאם כן מצב התוקן משתנה ל
+# והתוקן מוכנס למשתנה . נפתח מסך ניהול DB
+# אם לא מודפסת הודעה בהתאם והמנהל מתבקש להכניס מחדש את הפרטים
     def button_clicked_sumbit(self):
         userName=self.lineEdit_2.text()
         password=self.lineEdit.text()
@@ -131,16 +131,17 @@ class LoginScreen(QtWidgets.QMainWindow, AdminLogin.Ui_AdminLogin):
         self.lineEdit_2.setText('')
         self.lineEdit.setText('')
         self.close()
-        
+
+# מביא את התוקן
     def GetToken(self):
         return self.Token
-    
+# יוצא מהמסך
     def button_clicked_cancel(self):
         STATE.SetState(UI_State.STATE_EXIT_APP)
         self.close()
         
             
-            
+#       MessageBox with the given message
     def MessageBox(self,message):
         msgBox = QMessageBox()
         msgBox.setWindowTitle("msg")
@@ -159,6 +160,7 @@ class AdminScreen(QtWidgets.QMainWindow, AdminScreen.Ui_MainWindow):
         self.isPressed = 0
         self.Token = token
 
+# בודק האם התוקן תקף או לא , אם לא סוגר את המסך
     def IsHttpTokenExpCode(self, status):
         if status == 401:
             MessageBox("Token Expired\nCan not add this user")
@@ -167,6 +169,7 @@ class AdminScreen(QtWidgets.QMainWindow, AdminScreen.Ui_MainWindow):
             return True
         return False
 
+# בודק האם HTTP code בין 200 ל 299
     def IsHttpErrorCodeOk(self,status):
         if status >= 200 and status < 300:
             return True
@@ -181,17 +184,21 @@ class AdminScreen(QtWidgets.QMainWindow, AdminScreen.Ui_MainWindow):
         self.button3.clicked.connect(self.button_clicked_List)
         self.button3_2.clicked.connect(self.button_clicked_GetByID)
 
+# סוגר את המסך כאשר נלחץ הכפתור איקס
     def closeEvent(self, event):
         if self.isPressed == 0:
             STATE.SetState(UI_State.STATE_EXIT_APP)
         self.isPressed = 0
         #self.event.accept()  # let the window close
 
+#סוגר את המסך הראשי אם התוקן לר תקין
     def closeMainWin(self) :
         self.isPressed = 1
         self.close()
 #--------------------------------------------------
-
+#הפונקציה קוראת לפונקציית REST uplodePicture
+#אם הכל תקין נקראת פונקציה REST נוספת addUser ומוסיפה את המשתמש לDB
+# ופותחת ספרייה בשם המספר זהות שהתקבל עם התמונה והמודל
     def button_clicked_add(self):
         Dialog = AddUserDlg()
         Dialog.exec()
@@ -203,13 +210,12 @@ class AdminScreen(QtWidgets.QMainWindow, AdminScreen.Ui_MainWindow):
                     
         per=Dialog.ui.comboBox.currentText()
         picPath=Dialog.ui.lineEdit.text()
-        #olderpath = QtWidgets.QFileDialog.getExistingDirectory(self, 'Select Folder')
 
         resp,status = self.uplodePicture(int(Id),picPath, self.Token)
         if (self.IsHttpTokenExpCode(status)) :
             return
         if(self.IsHttpErrorCodeOk(status) == False) :
-            MessageBox("Image file not found..")
+            MessageBox("Image file not found..\nOr no faces found")
             return
         READ_ONLY = "read only"
         if(per == READ_ONLY):
@@ -226,14 +232,9 @@ class AdminScreen(QtWidgets.QMainWindow, AdminScreen.Ui_MainWindow):
         else :
             MessageBox("Can not add this user")
 
-# --------------------------------------------------
-
-    def button_clicked_folder(self):
-        fName = QFileDialog.getOpenFileNames(self, "open file", "", "All Files (*);; Python Files(*.py)")
-        if fName:
-            self.label1.setText(str(fName))
-
-# --------------------------------------------------
+#הפונקציה קוראת לשתי פקודות REST
+#DeletePic DeleteUserId שמוחקות את המשתמש מה DB
+# ומוחקות את הספריה עם המודל והתמונה
 
     def button_clicked_Del(self):
         Dialog = DeleteUserDlg()
@@ -258,6 +259,9 @@ class AdminScreen(QtWidgets.QMainWindow, AdminScreen.Ui_MainWindow):
             print(data)
 
 # --------------------------------------------------
+# הפונקציה קוראת לפונקצית REST
+#GetDataAll
+# ומציגה את כל המשתמשים הרשומים בDB ואת הפרטים שלהם
     def button_clicked_List(self):
         dlg = ListUsersDlg()
         data, status = restApi.GetDataAll(SERVER_URL )
@@ -274,6 +278,8 @@ class AdminScreen(QtWidgets.QMainWindow, AdminScreen.Ui_MainWindow):
         dlg.exec()
 
 # --------------------------------------------------
+# הפונקציה קוראת לפונקציית GetData Rest
+# ומראה את כל הפרטיים על המשתמש
     def button_clicked_GetByID(self):
         dlg = GetUserDlg()
         dlg.exec()
@@ -292,6 +298,7 @@ class AdminScreen(QtWidgets.QMainWindow, AdminScreen.Ui_MainWindow):
             print("fail")
 
  # --------------------------------------------------
+# הםונקציה מוחקת את התיקיה שנוצרה עם המודל
 
     def DeletePic(self,id , token):
         data, status = restApi.DeleteFolderByID(SERVER_URL, id ,token)
@@ -299,6 +306,8 @@ class AdminScreen(QtWidgets.QMainWindow, AdminScreen.Ui_MainWindow):
 
 # --------------------------------------------------
 
+# input- user id, path to uplode the picture and token
+#שולחת פונקציית Rest UploadPic
     def uplodePicture(self,id,path,token):
         data , status = restApi.UploadPic(SERVER_URL,id,path,token)
         return data,status

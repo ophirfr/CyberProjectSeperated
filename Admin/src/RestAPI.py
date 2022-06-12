@@ -4,8 +4,9 @@ import requests
 class RestAPI:
 
 #-----------------------------------------------
-#
-#
+#param - , api_url- url שבו רץ הסרבר
+#return - פרטי המשתמש , status_code
+# שולח לשרת פקודה שמביאה את כל המשתמשים מהDB
 #-----------------------------------------------
     def GetDataAll(self, api_url):
         URL = api_url + "/user"
@@ -51,8 +52,8 @@ class RestAPI:
 
 
 #-----------------------------------------------
-#
-#
+#מעלה את התמונה לצאת השרת
+#מקבל את הURL עליו השרת רץ , את המסםר המזהה של המתשמש , את מיקום התמונה וtoken
 #-----------------------------------------------
     def UploadPic(self, api_url, id, path,token):
         URL = api_url + "/file_op" + "/" + str(id)
@@ -67,7 +68,7 @@ class RestAPI:
 
 #-----------------------------------------------
 #
-#
+#מקבל את הURL עליו השרת רץ , את המסםר המזהה של המתשמש ושם הקובץ
 #-----------------------------------------------
     def CompareImages(self,api_url,id, fileName):
         URL = api_url + "/compare" + "/" + str(id) + "/" +"tmp.jpg"
@@ -80,8 +81,8 @@ class RestAPI:
         return response.json(), response.status_code
       
 #-----------------------------------------------
-#
-#
+#מוחק את התיקיה עם המודל פנים ,
+#מקבל את הURL של השרת את המסםר הזמהה של השתמש אותו רוצים למחוק ותוקן
 #-----------------------------------------------
     def DeleteFolderByID(self,api_url, id, token ):
         URL = api_url + "/" + "file_op" + "/" + str(id)
@@ -89,8 +90,8 @@ class RestAPI:
         response = requests.delete(URL, headers=MyHeaders, verify=False)
         return response, response.status_code
 #-----------------------------------------------
-#
-#
+#בודק האם הפרטים שהוכנסו נכונים ומחזיר HTTP error code  בהתאם
+#מקבל את הURL עליו רץ הסרבר את הסיסמא והשם משתמש של המנהל
 #-----------------------------------------------
     def LogIn(self,api_url, password, userName):
         URL = api_url + "/" + "login"

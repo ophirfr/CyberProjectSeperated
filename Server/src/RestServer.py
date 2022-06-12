@@ -52,10 +52,14 @@ def CreateFaceModel(fileName,dir):
     jpg_path=dir+"/"+fileName
     img=cv2.imread(jpg_path)
     rgbImg=cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
-    imgEncoding=face_recognition.face_encodings(rgbImg)[0]
-    with open (dir+"/model.dat",'wb') as f:
-        pickle.dump(imgEncoding,f)
-
+    #model
+    try:
+        imgEncoding=face_recognition.face_encodings(rgbImg)[0]
+        with open (dir+"/model.dat",'wb') as f:
+            pickle.dump(imgEncoding,f)
+        return True
+    except:
+        return False
 
 
 #id- prototype image of an id in data base
@@ -169,10 +173,12 @@ class APIFileHandler(Resource):
             return "No file selected for uploading", 400
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            #filename=file.filename
             path = makeDirectory( id)
             file.save(os.path.join(path, filename))
-            CreateFaceModel(filename,path)
+            if(CreateFaceModel(filename,path)==False):
+                folderPath = GetDirByID(id)
+                shutil.rmtree(folderPath)
+                return "No faces found",400
             return "File successfully uploaded", 201
         else:
             return "Allowed file types are jpg, jpeg", 400
@@ -180,7 +186,7 @@ class APIFileHandler(Resource):
     def post(self,  id):
         return self.upload_file(id)
 
-
+# deletes dir
 
     def delete (self, id):
         folderPath=GetDirByID(id)
