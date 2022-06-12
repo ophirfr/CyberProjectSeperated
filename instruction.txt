@@ -6,8 +6,17 @@ Create a shortcut pointing to run_client_ui.bat
 windows start -> run -> 'enter' -> shell:startup -> 'enter'
 drag the shortcut
 
-conda create --name py39_test python=3.9
-conda activate  py39_test
+if probelm with windows security then:
+============================
+open powershell as admin
+Set-ExecutionPolicy RemoteSigned  -> A
+
+
+
+Check if demo.txt is R or RW
+============================
+
+dir /ar (lists only ro files.)
 
 
 ------
@@ -21,3 +30,11 @@ pip install -r requirement.txt
 
 check conneition berween conputer with ping
 ping 
+
+
+
+
+
+conda create --name py39_test python=3.9
+conda activate  py39_test
+

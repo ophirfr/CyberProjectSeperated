@@ -8,6 +8,8 @@ from faceD import faceDetect
 import json
 import ctypes
 import threading
+import os
+import stat
 
 restAPI= RestAPI()
 faceD= faceDetect()
@@ -17,6 +19,13 @@ SERVER_URL =""
 def LogOff() :
      dll = ctypes.WinDLL('user32.dll')
      dll.LockWorkStation()
+
+def ChangePermission(perm):
+    if perm=="RO" :
+        os.chmod("../../demo.txt", stat.S_IRUSR )
+        return
+    os.chmod("../../demo.txt", stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR)
+    
   
 
 #log in screen
@@ -84,9 +93,9 @@ class ClientUi(QtWidgets.QMainWindow, LogInScreen.Ui_MainWindow):
         if (id == "" or id.isdigit() == False):
             self.MessegeBox("Invalid ID.\nUse numbers only")
         else:
-            res,status = restAPI.GetData(SERVER_URL,int(id))
+            data,status = restAPI.GetData(SERVER_URL,int(id))
             if status==500:
-                self.MessegeBox(res)
+                self.MessegeBox(data)
                 return
             if status == 400:
                 self.MessegeBox("Cound not find ID in DB")
@@ -96,7 +105,10 @@ class ClientUi(QtWidgets.QMainWindow, LogInScreen.Ui_MainWindow):
                     res,status = restAPI.CompareImages(SERVER_URL,int(id),r"..\pic_tmp_client\face.jpg")
                     if(status== 200):
                         self.Verified = True
+                        ChangePermission(data[0][2])
                         self.MessegeBox("You are APPROVED")
+                        
+                        
                     else:
                         self.MessegeBox("You are DENIED!!!\nThe Computer will Lockdown !!!\n You will have to re-enter your User/Pass for Windows")
                         LogOff()
