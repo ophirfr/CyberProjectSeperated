@@ -106,7 +106,8 @@ class ClientUi(QtWidgets.QMainWindow, LogInScreen.Ui_MainWindow):
                     if(status== 200):
                         self.Verified = True
                         ChangePermission(data[0][2])
-                        self.MessegeBox("You are APPROVED")
+                        self.MessegeBox("You are APPROVED\nPermission to file demo.txt has changed")
+                        self.close()
                         
                         
                     else:
