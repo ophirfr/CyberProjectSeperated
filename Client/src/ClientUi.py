@@ -10,6 +10,7 @@ import ctypes
 import threading
 import os
 import stat
+import logging
 
 restAPI= RestAPI()
 faceD= faceDetect()
@@ -38,7 +39,8 @@ def IpConfig():
         with open('../setting_client/IpConfig.json', 'r') as openfile:
             json_object = json.load(openfile)
     except FileNotFoundError:
-        print('can not find the file')
+        #print('can not find the file')
+        logging.warning('can not find the file!')
         return
     global SERVER_URL
     SERVER_URL='https://'+json_object["ip"]+':'+json_object["port"]
@@ -120,6 +122,7 @@ class ClientUi(QtWidgets.QMainWindow, LogInScreen.Ui_MainWindow):
 
 # הרצה של הגרפיקה
 def main():
+    logging.warning('Starting')
     IpConfig()
     app = QApplication(sys.argv)
     form = ClientUi()

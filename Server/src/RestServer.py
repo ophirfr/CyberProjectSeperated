@@ -13,12 +13,14 @@ import jwt
 import datetime
 from werkzeug.security import generate_password_hash,check_password_hash
 from ServerConfig import ServerSettings
+import logging
 
 SrvSettings = ServerSettings()
 
 app = Flask(__name__)
 api = Api(app)
 dataBase = DataBase()
+logging.basicConfig(level=logging.INFO)
 
 
 # input- fileName
@@ -110,6 +112,7 @@ class APIDBServerId(Resource):
 
     def get(self, id):
         # return dict
+        logging.info(request.base_url + " " + str(id))
         res = dataBase.getById(id)
         if len(res) == 0 or res == 0:
             return "User not found", 400
@@ -129,6 +132,7 @@ class APIDBServer(Resource):
     # מה שיקרה כאשר פקודת get נשלחת
     method_decorators = {'post':[token_required],'delete':[token_required]}
     def get(self):
+        logging.info(request.base_url)
         data = dataBase.getAll()
         if (data != 0):
             return data, 200
@@ -136,6 +140,7 @@ class APIDBServer(Resource):
 
     # Provide id in JSON body
     def addUser(self):
+        logging.info(request.base_url)
         if request.is_json:
             data = request.get_json()
             id1 = data["user_id"]
@@ -146,6 +151,7 @@ class APIDBServer(Resource):
         return "can not add user", 400
 
     def post(self):
+        logging.info(request.base_url)
         res, status = self.addUser()
         if status == 200:
             return res, status
@@ -165,6 +171,7 @@ class APIFileHandler(Resource):
 # checks if the file name exits in the HTTP headers if so creats a dir by the name of"id"
 # saves the pic in the dir , creates a face model and saves in the same dir
     def upload_file(self,  id):
+        logging.info(request.base_url+ " " + str(id))
         # check if the post request has the file part
         if 'file' not in request.files:
             return "No file part in the request", 400
@@ -200,6 +207,7 @@ class APIFaceId(Resource):
 
 #Uplodes the picture to tmp dir in the server side ,and comperes between the exsiting model to the new model of the picture
     def getFileAndFaceCompere (self, id, fileName):
+        logging.info(request.base_url+ " " + str(id) + " " + fileName)
         # check if the post request has the file part
         if 'file' not in request.files:
             return "No file part in the request", 400
@@ -232,6 +240,7 @@ class APILogIn(Resource):
 
 #בודק אם הסיסמא שקיבל והסיסמא שנשמרה בקובץ זהות בעזרת פונקציית  hash , ובודק את השם משתמש
     def CheckLogIn(self):
+        logging.info(request.base_url)
         auth = request.authorization
         if not auth or not auth.username or not auth.password:
             return make_response('could not verify', 401, {'Authentication': 'login required"'})
